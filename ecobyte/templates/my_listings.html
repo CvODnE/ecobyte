@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}My Listings - EcoByte{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-4 mb-3">My Listings</h1>
+            <p class="lead text-muted">
+                {% if user.is_donor %}
+                Manage your food donations and track their status.
+                {% else %}
+                View and manage your claimed food items.
+                {% endif %}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if user.is_donor %}
+            <a href="{% url 'web:add_listing' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Listing
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Listings -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for listing in listings %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">{{ listing.get_food_type_display }}</h5>
+                        <span class="badge {% if listing.status == 'available' %}bg-success{% elif listing.status == 'claimed' %}bg-warning{% else %}bg-secondary{% endif %}">
+                            {{ listing.get_status_display }}
+                        </span>
+                    </div>
+                    <p class="card-text">
+                        <strong>Quantity:</strong> {{ listing.quantity }}<br>
+                        <strong>Location:</strong> {{ listing.location }}<br>
+                        <strong>Available Until:</strong> {{ listing.available_until|date:"M d, Y" }}<br>
+                        {% if listing.special_instructions %}
+                        <strong>Special Instructions:</strong><br>
+                        {{ listing.special_instructions }}
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    {% if user.is_donor %}
+                        {% if listing.status == 'available' %}
+                        <a href="{% url 'web:edit_listing' listing.id %}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <form method="post" action="{% url 'web:delete_listing' listing.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger w-100" 
+                                    onclick="return confirm('Are you sure you want to delete this listing?')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                        {% else %}
+                        <div class="text-center">
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                This listing has been claimed
+                            </p>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        {% if listing.status == 'claimed' %}
+                        <div class="text-center">
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-check-circle me-2"></i>
+                                You've claimed this food
+                            </p>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                {% if user.is_donor %}
+                You haven't added any food listings yet. Start by adding your first donation!
+                {% else %}
+                You haven't claimed any food items yet. Browse available listings to get started!
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

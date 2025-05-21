@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h2 class="mb-3"><i class="fas fa-user-circle me-2"></i>Donor Dashboard</h2>
+                <p class="text-muted">Welcome back, {{ user.name }}!</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="{% url 'web:add_listing' %}" class="btn btn-primary">
+                    <i class="fas fa-plus-circle me-2"></i>Add New Listing
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-list me-2"></i>Total Listings</h5>
+                        <h2 class="card-text">{{ total_listings }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-check-circle me-2"></i>Active Listings</h5>
+                        <h2 class="card-text">{{ active_listings }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Listings -->
+        <div class="card shadow">
+            <div class="card-header bg-white">
+                <h4 class="mb-0"><i class="fas fa-utensils me-2"></i>Your Food Listings</h4>
+            </div>
+            <div class="card-body">
+                {% if listings %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Food Name</th>
+                                    <th>Type</th>
+                                    <th>Quantity</th>
+                                    <th>Quality</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for listing in listings %}
+                                <tr>
+                                    <td>{{ listing.food_name }}</td>
+                                    <td>{{ listing.get_food_type_display }}</td>
+                                    <td>{{ listing.quantity }}</td>
+                                    <td>{{ listing.get_quality_display }}</td>
+                                    <td>{{ listing.location }}</td>
+                                    <td>
+                                        {% if listing.is_available %}
+                                        <span class="badge bg-success">Available</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Claimed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if listing.is_available %}
+                                        <a href="{% url 'web:delete_listing' listing.id %}" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>You haven't added any food listings yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

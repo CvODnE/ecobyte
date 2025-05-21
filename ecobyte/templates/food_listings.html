@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Available Food Listings - EcoByte{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h2 class="mb-3"><i class="fas fa-utensils me-2"></i>Available Food Listings</h2>
+            </div>
+            <div class="col-md-4">
+                <form method="GET" class="d-flex">
+                    <input type="text" name="search" class="form-control me-2" placeholder="Search by food or location..."
+                           value="{{ request.GET.search }}">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="btn-group" role="group">
+                    <a href="{% url 'web:food_listings' %}" class="btn btn-outline-primary {% if not request.GET.food_type %}active{% endif %}">
+                        All
+                    </a>
+                    {% for value, label in food_types %}
+                    <a href="?food_type={{ value }}" 
+                       class="btn btn-outline-primary {% if request.GET.food_type == value %}active{% endif %}">
+                        {{ label }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            {% if listings %}
+                {% for listing in listings %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ listing.food_name }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ listing.get_food_type_display }}</h6>
+                            
+                            <div class="mb-3">
+                                <p class="card-text">
+                                    <i class="fas fa-balance-scale me-2"></i>{{ listing.quantity }}
+                                </p>
+                                <p class="card-text">
+                                    <i class="fas fa-star me-2"></i>Quality: {{ listing.get_quality_display }}
+                                </p>
+                                <p class="card-text">
+                                    <i class="fas fa-map-marker-alt me-2"></i>{{ listing.location }}
+                                </p>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-2"></i>Posted {{ listing.created_at|timesince }} ago
+                                    </small>
+                                </p>
+                            </div>
+                            
+                            {% if user.is_authenticated and user.is_collector %}
+                            <a href="#" class="btn btn-primary">
+                                <i class="fas fa-hand-holding-heart me-2"></i>Claim Food
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>No food listings available at the moment.
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %} 
