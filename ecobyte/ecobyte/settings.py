@@ -7,7 +7,7 @@ SECRET_KEY = 'django-insecure-fp8c&6(pyc)dc)56ark7e503jkay#2(1*v73q-dgk07vixh9u-
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['ecobyte.pythonanywhere.com']
+ALLOWED_HOSTS = []
 
 # Custom user model
 AUTH_USER_MODEL = 'web.User'
@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'web',
+    'chatbot',
 ]
 
 MIDDLEWARE = [
